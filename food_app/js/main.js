@@ -67,6 +67,10 @@ function getRecipes() {
     loaderGif.style.display = "none";
   };
 
+  newRequest.onerror = function() {
+    alert("Please select all fields");
+  };
+
   newRequest.send();
   //After sending request SHOW the loader
   loaderGif.style.display = "block";
