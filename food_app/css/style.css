@@ -265,3 +265,21 @@ div.pages-div span.visible {
   text-transform: uppercase;
   color: #ccc;
 }
+
+/* animation */
+
+span.calories,
+img.bounceIn {
+  animation-delay: 0s;
+  animation-duration: 2s;
+}
+
+div.labels {
+  animation-delay: 0s;
+  animation-duration: 3s;
+}
+
+h3 {
+  animation-delay: 0s;
+  animation-duration: 1s;
+}

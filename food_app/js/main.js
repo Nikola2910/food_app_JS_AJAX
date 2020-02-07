@@ -133,12 +133,14 @@ function createRecipes(data) {
 
     var foodName = document.createElement("h3");
     foodName.textContent = hits[index].recipe.label;
+    foodName.classList.add("rubberBand");
     recipeDiv.appendChild(foodName);
 
     //Appending recipe image
 
     var foodImg = document.createElement("img");
     foodImg.setAttribute("src", hits[index].recipe.image);
+    foodImg.classList.add("bounceIn");
     recipeDiv.prepend(foodImg);
 
     //Appending calories element
@@ -147,6 +149,7 @@ function createRecipes(data) {
 
     var calories = document.createElement("span");
     calories.classList.add("calories");
+    calories.classList.add("rollIn");
     calories.textContent =
       Math.round(hits[index].recipe.calories / servings) + " cal";
     recipeDiv.appendChild(calories);
@@ -154,6 +157,7 @@ function createRecipes(data) {
     //creating labels div and appending labels
     var labelsDiv = document.createElement("div");
     labelsDiv.classList.add("labels");
+    labelsDiv.classList.add("flipInX");
     recipeDiv.appendChild(labelsDiv);
 
     var labels = element.recipe.healthLabels;
