@@ -215,6 +215,35 @@ main {
   font-size: 11px;
 }
 
+/* Pagination elements */
+
+div.pages-div {
+  display: flex;
+  overflow: visible;
+  text-align: center;
+  width: 300px;
+  margin: 20px auto;
+}
+
+div.pages-div span {
+  display: none;
+  font-size: 1.2em;
+  padding: 3px 8px;
+  border: 1px solid #7aca25;
+  margin: 2px;
+  cursor: pointer;
+  width: 40px;
+}
+
+div.pages-div span.active {
+  background-color: #7aca25;
+  color: #fff;
+}
+
+div.pages-div span.visible {
+  display: block;
+}
+
 /* PLACEHOLDER STYLE */
 
 *::-webkit-input-placeholder {

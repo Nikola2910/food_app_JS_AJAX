@@ -13,6 +13,9 @@ var health = document.querySelector("select#health").value;
 var diet = document.querySelector("select#diet").value;
 var loaderGif = document.querySelector("div.loader img");
 
+var start = 0;
+var end = 10;
+
 //functions for changing health and diet values
 
 function changeHealth() {
@@ -55,7 +58,11 @@ function getRecipes() {
       "&calories=" +
       minKcal +
       "-" +
-      maxKcal
+      maxKcal +
+      "&from=" +
+      start +
+      "&to=" +
+      end
   );
 
   newRequest.onload = function() {
@@ -63,6 +70,7 @@ function getRecipes() {
     console.log(data);
 
     createRecipes(data);
+    paginate(data);
     //When Recipes are created HIDE the loader
     loaderGif.style.display = "none";
   };
@@ -76,10 +84,19 @@ function getRecipes() {
   loaderGif.style.display = "block";
 }
 
-//to be changed
+//enable/disable button
 
 var btn = document.querySelector("button");
-btn.removeAttribute("disabled");
+
+var searchField = document.querySelector("input.keyword-input");
+
+searchField.addEventListener("keyup", function(e) {
+  if (e.target.value != "") {
+    btn.disabled = false;
+  } else {
+    btn.disabled = true;
+  }
+});
 
 btn.addEventListener("click", getRecipes);
 
@@ -127,7 +144,6 @@ function createRecipes(data) {
     //Appending calories element
 
     var servings = hits[index].recipe.yield;
-    console.log(servings);
 
     var calories = document.createElement("span");
     calories.classList.add("calories");
@@ -149,4 +165,139 @@ function createRecipes(data) {
       labelsDiv.appendChild(label);
     });
   });
+}
+
+//Function for paginating data
+
+function paginate(data) {
+  //defining number of results per page
+
+  var results = data.count;
+  var resultsPerPage = 10;
+  var numberOfPages = Math.ceil(results / resultsPerPage);
+  var recipesDiv = document.querySelector("#recipes");
+
+  //Do not create a new div with spans if it exsists
+
+  if (!document.querySelector(".pages-div")) {
+    var pagesDiv = document.createElement("div");
+    pagesDiv.classList.add("pages-div");
+    recipesDiv.after(pagesDiv);
+
+    //creating page spans
+
+    for (var i = 0; i < numberOfPages; i++) {
+      var pageSpan = document.createElement("span");
+
+      pageSpan.textContent = i + 1;
+
+      pagesDiv.appendChild(pageSpan);
+    }
+  }
+  var pagesNodeList = document.querySelectorAll("div.pages-div span");
+  var pagesArray = Array.from(pagesNodeList);
+
+  activeFirst(pagesArray[0]);
+  visibleFirstFive(pagesArray);
+  visibleFirstLast(pagesArray[0], pagesArray[pagesArray.length - 1]);
+
+  //adding event listeners to spans
+
+  pagesArray.forEach(function(element, index) {
+    element.addEventListener("click", function() {
+      //add active class to clicked span and removing from any other
+
+      if (!element.classList.contains("active")) {
+        pagesArray.forEach(function(e) {
+          e.classList.remove("active");
+        });
+
+        element.classList.add("active");
+      }
+
+      //making 2 pages before and after active one visible
+
+      var startPage = Math.max(0, index - 2);
+      var endPage = Math.min(startPage + 4, pagesArray.length - 1);
+
+      if (startPage < 0) {
+        startPage = 0;
+      }
+
+      if (endPage > pagesArray.length - 1) {
+        endPage = pagesArray.length - 1;
+      }
+
+      pagesArray.forEach(function(e) {
+        e.classList.remove("visible");
+      });
+
+      visibleFirstLast(pagesArray[0], pagesArray[pagesArray.length - 1]);
+
+      for (var i = startPage; i <= endPage; i++) {
+        pagesArray[i].classList.add("visible");
+      }
+
+      //setting the value for range when sending request
+
+      start = index * 10;
+      end = start + 10;
+      var newRequest = new XMLHttpRequest();
+
+      newRequest.open(
+        "GET",
+        "https://api.edamam.com/search?q=" +
+          search +
+          "&app_id=" +
+          appId +
+          "&app_key=" +
+          appKey +
+          "&health=" +
+          health +
+          "&diet=" +
+          diet +
+          "&calories=" +
+          minKcal +
+          "-" +
+          maxKcal +
+          "&from=" +
+          start +
+          "&to=" +
+          end
+      );
+
+      newRequest.onload = function() {
+        var data = JSON.parse(newRequest.responseText);
+
+        createRecipes(data);
+        //When Recipes are created HIDE the loader
+        loaderGif.style.display = "none";
+      };
+
+      newRequest.send();
+    });
+  });
+}
+
+// Add active class to first page box
+
+function activeFirst(firstPage) {
+  firstPage.classList.add("active");
+}
+
+//make first five pages visible when sending request
+
+function visibleFirstFive(arrayOfPages) {
+  var firstFive = arrayOfPages.slice(0, 5);
+
+  firstFive.forEach(function(e) {
+    e.classList.add("visible");
+  });
+}
+
+// make first and last page always visible
+
+function visibleFirstLast(firstPage, lastPage) {
+  firstPage.classList.add("visible");
+  lastPage.classList.add("visible");
 }
